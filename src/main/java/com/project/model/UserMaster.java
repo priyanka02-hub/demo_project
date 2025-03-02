@@ -1,7 +1,6 @@
 package com.project.model;
 
 import jakarta.persistence.*;
-import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Table(name="user_master")

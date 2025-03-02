@@ -13,19 +13,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class UserService {
 
-UserRegistrationDTO userDTO;
-UserMaster user;
     @Autowired
     private UserDetailsService userDetailsService;
 
@@ -44,6 +39,10 @@ UserMaster user;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private EmailService emailService;
+
+
     public String registerUser(UserRegistrationDTO userDTO) {
 
         RoleMaster role = roleRepository.findByRoleName(userDTO.getRoleName().toUpperCase())
@@ -59,7 +58,12 @@ UserMaster user;
         user.setRole(role);
 
         userRepository.save(user);
+        // Send email notification for user creation
+        emailService.sendUserDetails(user, "Created");
+
         return "User has been created successfully: " + role.getRoleName();
+
+
     }
 
 
@@ -76,6 +80,10 @@ UserMaster user;
                     updatedUser.setRole(existingUser.getRole());
 
                     userRepository.save(existingUser);
+
+                    // Send email notification for user update
+                    emailService.sendUserDetails(existingUser, "Updated");
+
                     return ResponseEntity.ok("User has been updated successfully");
                 })
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found"));
@@ -94,6 +102,20 @@ UserMaster user;
         return "fail";
     }
 
+    // DELETE USER
+    public ResponseEntity<?> deleteUser(long id) {
+        return userRepository.findById(id)
+                .map(user -> {
+                    userRepository.delete(user);
+
+                    // Send email notification for user deletion
+                    emailService.sendDeactivationMail(user);
+
+                    return ResponseEntity.ok("User has been deleted successfully");
+                })
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Unable to delete user"));
+    }
+
 
     public String refreshAccessToken(String refreshToken, String role) {
         String username = jwtService.extractUserName(refreshToken);
@@ -108,8 +130,5 @@ UserMaster user;
         }
         return "Invalid refresh token";
     }
-
-
-
 
 }

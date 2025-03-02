@@ -2,6 +2,8 @@ package com.project.config;
 
 import com.project.model.RoleMaster;
 import com.project.repo.RoleRepository;
+import com.project.service.MyUserDetailsService;
+import com.project.service.UserService;
 import jakarta.servlet.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -9,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -27,6 +30,7 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
+
     @Autowired
     private JwtFilter   jwtFilter;
 
@@ -40,14 +44,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http)throws Exception{
         return
-               http.csrf(csrf->csrf.disable())
+                http.csrf(csrf->csrf.disable())
                         .authorizeHttpRequests (auth->
                                 auth
-                                        .requestMatchers("/auth/**")
+                                        .requestMatchers("/login","/refresh-token")
                                         .permitAll()
-                                        .requestMatchers("/manager/**").hasRole("MANAGER")
-                                        .requestMatchers("/developer/**").hasRole("DEVELOPER")
-                                        .requestMatchers("/tester/**").hasRole("TESTER")
+                                        .requestMatchers("/createuser","/updateuser/{id}","/deleteuser/{id}","/getuserbyid/{id}","/getalluser").hasRole("MANAGER")
+                                        .requestMatchers("/getprojectdevelop/{id}").hasRole("DEVELOPER")
+                                        .requestMatchers("/getprojecttest/{id}").hasRole("TESTER")
                                         .anyRequest()
                                         .authenticated())
 
@@ -72,16 +76,5 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
-   /* @Bean
-    public CommandLineRunner insertRoles(RoleRepository roleRepository) {
-        return args -> {
-            List<String> roles = List.of("MANAGER", "DEVELOPER", "TESTER");
 
-            for (String roleName : roles) {
-                roleRepository.findByRoleName(roleName)
-                        .orElseGet(() -> roleRepository.save(new RoleMaster(null, roleName)));
-            }
-            System.out.println(" Roles Initialized Successfully");
-        };
-    }*/
 }

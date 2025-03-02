@@ -1,18 +1,27 @@
 package com.project.service;
 
 import io.jsonwebtoken.Claims;
+
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.SecretKey;
+
 import java.security.Key;
 import java.util.Date;
+import java.util.function.Function;
+
+
+import io.jsonwebtoken.SignatureAlgorithm;
+
+
+import org.springframework.security.core.userdetails.UserDetails;
+
+import javax.crypto.SecretKey;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
+
+import static io.jsonwebtoken.Jwts.*;
 
 @Service
 public class JwtService {

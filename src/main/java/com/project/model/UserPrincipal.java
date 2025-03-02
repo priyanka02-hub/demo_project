@@ -5,8 +5,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class UserPrincipal implements UserDetails {
 
@@ -21,7 +21,7 @@ public class UserPrincipal implements UserDetails {
         this.user = user;
     }
 
-    @Override
+   @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (user.getRole() != null) {
             return List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().getRoleName().toUpperCase()));
@@ -29,6 +29,7 @@ public class UserPrincipal implements UserDetails {
             return List.of();
         }
     }
+
 
 
     @Override
