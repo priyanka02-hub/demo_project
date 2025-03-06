@@ -8,6 +8,9 @@ import com.project.repo.RoleRepository;
 import com.project.repo.UserRepository;
 import com.project.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,6 +39,8 @@ public class managerController {
     @PostMapping("/createuser")
     public ResponseEntity<String> registerUser(@RequestBody UserRegistrationDTO userDTO) {
         String response = service.registerUser(userDTO);
+
+
         return ResponseEntity.ok(response);
     }
 
@@ -61,13 +66,26 @@ public class managerController {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found"));
     }
 
-    @GetMapping("/getalluser")
+   /* @GetMapping("/getalluser")
     public ResponseEntity<Object> getAllUsers() {
         List<UserMaster> users = userRepo.findAll();
         if (users.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No user found ");
         }
         return ResponseEntity.status(HttpStatus.OK).body("success");
+    }*/
+
+    @GetMapping("/getalluser")
+    public ResponseEntity<Object> getAllUsers(@RequestParam(defaultValue = "1") int page,
+                                              @RequestParam(defaultValue = "2") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<UserMaster> usersPage = userRepo.findAll(pageable);
+
+        if (usersPage.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found");
+        }
+        return ResponseEntity.ok(usersPage);
+       // return ResponseEntity.status(HttpStatus.OK).body("success");
     }
 }
 

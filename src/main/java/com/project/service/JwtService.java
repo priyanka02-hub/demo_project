@@ -37,7 +37,7 @@ public class JwtService {
     }
 
     public String generateToken(UserDetails userDetails, String role) {
-        return generateToken(new HashMap<>(), userDetails, 7 * 24 * 60 * 60 * 1000); // 12 hours expiry
+        return generateToken(new HashMap<>(), userDetails, 7 * 24 * 60 * 60 * 1000); // 7 hours expiry
     }
 
     public String generateRefreshToken(UserDetails userDetails) {
