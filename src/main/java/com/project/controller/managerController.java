@@ -36,6 +36,8 @@ public class managerController {
     @PostMapping("/createuser")
     public ResponseEntity<String> registerUser(@RequestBody UserRegistrationDTO userDTO) {
         String response = service.registerUser(userDTO);
+
+
         return ResponseEntity.ok(response);
     }
 
